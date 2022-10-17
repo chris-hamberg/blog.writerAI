@@ -17,7 +17,16 @@ class Article:
              "movie", "hollywood", " pop", "country", "guitar",
              "bless", "heart", " cd", "twitter", "instagram", "1.", "1) ",
              "butt", "penis", "vagina", " cock", "balls", " band", "love",
-             " photo", "google", "youtube", "microsoft", "facebook"]
+             " photo", "google", "youtube", "microsoft", "facebook",
+             "gig", "class", "hair", "blog", "concert", "1980", "aunt",
+             " shit", "beatmix", "clothes", "naked", "beach", "http",
+             "jimmy page", "90s", "80s", "loving", "girl", "sister",
+             "b*tch", "kickass", "60s", "40 years", "50 years", "chicago bulls",
+             "songwriter", "sunday", "monday", "tuesday", "wednesday",
+             "thursday", "friday", "saturday", "january", "february",
+             "march", "april", " may ", "june", "july", "august", "september",
+             "october", "november", "december"
+             ]
 
 
     def __init__(self):
@@ -68,13 +77,13 @@ class Article:
         slashes  = text.count("\\")
         t        = text.lower()
         assert length   >= 1000,           f"only {length} characters."
-        assert newlines / length <  0.009, f"{newlines} double newlines."
-        assert quotes   / length <  0.01,  f"{quotes} quotes."
+        assert newlines <  5,              f"{newlines} double newlines."
+        assert quotes   <  6,              f"{quotes} quotes."
         assert hyphens  <  5,              f"{hyphens} hyphens."
-        assert slashes   <  5,             f"{slashes} back slashes."
+        assert slashes  <  5,              f"{slashes} back slashes."
         
         for flag in __class__.FLAGS:
-            assert not (flag in t),        f"prohibited term '{flag}'"
+            assert not t.count(flag),      f"prohibited term '{flag}'"
 
         t = t.split(" ")
         t = [s.strip(".") for s in t if len(s.strip(".")) > 4]
