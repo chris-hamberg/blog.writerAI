@@ -26,3 +26,8 @@ class Endpoint:
         r = requests.post(url, headers = self.headers, data = json.dumps(data))
         return r
 
+
+    def get(self, id):
+        url = f"{self.url}/api/article/{id}"
+        r = requests.get(url)
+        return r

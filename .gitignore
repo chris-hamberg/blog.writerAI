@@ -12,6 +12,7 @@ tweets/*
 # database
 *.db
 ./model/log.dat
+./articles/delete.list.txt
 
 # C extensions
 *.so

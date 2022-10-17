@@ -1,0 +1,16 @@
+ID: 752    FLAGS: gig
+ID: 757    FLAGS: February, Saturday, Tuesday
+ID: 761    FLAGS: class, hair
+ID: 764    FLAGS: blog, concert, Friday
+ID: 767    FLAGS: 1980
+ID: 768    FLAGS: aunt
+ID: 769    FLAGS: shit, beatmix
+ID: 773    FLAGS: Saturday, January, clothes, naked, beach
+ID: 774    FLAGS: http, Jimmy Page
+ID: 777    FLAGS: 90s, 80s
+ID: 778    FLAGS: loving
+ID: 782    FLAGS: girl, June, sister, b*tch
+ID: 783    FLAGS: June, July
+ID: 785    FLAGS: 60s, 40 years, 50 years, Chicago Bulls
+ID: 787    FLAGS: songwriter
+ID: 788    FLAGS: 
