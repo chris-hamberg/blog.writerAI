@@ -29,7 +29,8 @@ class Article:
              "songwriter", "sunday", "monday", "tuesday", "wednesday",
              "thursday", "friday", "saturday", "january", "february",
              "march", "april", " may ", "june", "july", "august", "september",
-             "october", "november", "december"
+             "october", "november", "december", "sound track", "soundtrack",
+             "wife"
              ]
 
 
@@ -46,7 +47,7 @@ class Article:
         self._generator = generator
 
 
-    def write(self, slug, max_length = 500, do_sample = True, 
+    def write(self, slug, max_length = 700, do_sample = True, 
             temperature = 0.91):
         data["curgen iterations"] = 0
         data["generations"] += 1
