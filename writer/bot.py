@@ -75,7 +75,7 @@ class Article:
                 print(f" {str(data['fails']).zfill(10)} [---<<   iteration" 
                        " rejections    >>---] (global)")
                 print(f" This article iteration did not meet standard: {str(e)}")
-                print(" Sleeping 10 seconds for garbage collection. Retrying.")
+                print(" Sleeping 10 seconds for garbage collection. Retrying.\n")
                 time.sleep(10)
                 continue
         self._parse(text, slug)
