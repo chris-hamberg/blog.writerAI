@@ -7,6 +7,10 @@ import time
 import sys
 
 
+data = {"generations": 0, "lifetime iterations": 0, "curgen iterations": 0, 
+        "fails": 0}
+
+
 class Article:
 
 
@@ -44,7 +48,11 @@ class Article:
 
     def write(self, slug, max_length = 500, do_sample = True, 
             temperature = 0.91):
+        data["curgen iterations"] = 0
+        data["generations"] += 1
         while True:
+            data["lifetime iterations"] += 1
+            data["curgen iterations"] += 1
             self.text  = None
             self.title = None
             self.desc  = None
@@ -59,8 +67,15 @@ class Article:
                 break
             except AssertionError as e:
                 del result, text
-                print(f" Article did not meet standard: {str(e)}")
-                print(" Sleeping 10 seconds for garbage collection.")
+                data["fails"] += 1
+                print(f" {data['curgen iterations']} <[CURGEN"
+                      f" ITERATIONS]> of {data['lifetime iterations']}"
+                      f" <[ITERATIONS]> across {data['generations']}"
+                       " <[ARTICLE GENERATIONS]>")
+                print(f" {str(data['fails']).zfill(10)} [---<<   iteration" 
+                       " rejections    >>---] (global)")
+                print(f" This article iteration did not meet standard: {str(e)}")
+                print(" Sleeping 10 seconds for garbage collection. Retrying.")
                 time.sleep(10)
                 continue
         self._parse(text, slug)
