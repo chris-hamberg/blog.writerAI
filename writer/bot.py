@@ -93,18 +93,18 @@ class Article:
         slashes  = text.count("\\")
         t        = text.lower()
         assert length   >= 1000,           f"only {length} characters."
-        assert newlines <  5,              f"{newlines} double newlines."
+        assert newlines <  6,              f"{newlines} double newlines."
         assert quotes   <  6,              f"{quotes} quotes."
-        assert hyphens  <  5,              f"{hyphens} hyphens."
+        assert hyphens  <  6,              f"{hyphens} hyphens."
         assert slashes  <  5,              f"{slashes} back slashes."
         
         for flag in __class__.FLAGS:
             assert not t.count(flag),      f"prohibited term '{flag}'"
 
         t = t.split(" ")
-        t = [s.strip(".") for s in t if len(s.strip(".")) > 4]
+        t = [s.strip(".") for s in t if len(s.strip(".")) > 5]
         percent_unique = round((len(set(t)) / len(t)) * 100, 2)
-        assert percent_unique >= 50,       f"only {percent_unique}% percent unique."
+        assert percent_unique >= 30,       f"only {percent_unique}% percent unique."
 
 
     def _parse(self, text, slug):
