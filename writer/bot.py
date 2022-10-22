@@ -223,7 +223,7 @@ class Article:
         self.desc  = self.text[:80] + "..."
         self.text  = "<p>" + self.text.replace("\n\n", "</p> <p>")
         self.text  = self.text.replace("<p></p>", "")
-        self.text  = f"<p>Written by: {self.author} Robot.</p>" + self.text
+        #self.text  = f"<p>Written by: {self.author} Robot.</p>" + self.text
 
 
     def _embed_ads(self):
