@@ -1,10 +1,13 @@
-from collections import OrderedDict
-from transformers import pipeline
-from pprint import pprint
 try:
     from writer.ads import *
 except ModuleNotFoundError:
     from ads import *
+
+from collections import OrderedDict
+from collections import Counter
+
+from transformers import pipeline
+from pprint import pprint
 import sqlite3
 import random
 import time
@@ -106,6 +109,8 @@ class Article:
             time.sleep(1)
             try:
                 self._reshape(text, slug)
+                self._parse()
+                self._validate()
                 break
             except (AttributeError, AssertionError) as e:
                 del result, text
@@ -120,12 +125,24 @@ class Article:
                 print(" Sleeping 10 seconds for garbage collection. Retrying.\n")
                 time.sleep(10)
                 continue
-        self._parse(text)
+
         self._compile()
         pprint(self.compiled_article)
         self._embed_ads()
         self._database_write()
         data["generations"] += 1
+
+
+    def _validate(self):
+        text      = self.text.lower().split()
+        text      = [t.rstrip(".").rstrip("?") for t in text]
+        count     = Counter(text)
+        relevance = count["beat"] + count["beats"]
+        relevance += count["producer"] + count["studio"] + count["mixtape"]
+        relevance += count["trap"] + count["music"] + count["rap"]
+        relevance += count["rapper"] + count["rapping"] + count["raps"]
+        relevance = (relevance / len(text)) * 100
+        assert 1 <= relevance, "only {relevance}% relevance to the topic."
 
 
     def _reshape(self, text, slug):
@@ -212,7 +229,7 @@ class Article:
         return stri
         
 
-    def _parse(self, text):
+    def _parse(self):
         self.text  = self.text.replace('"', '\"')
         self.text  = self.text.replace("'", "")
         while not self.title:
