@@ -55,7 +55,8 @@ class Article:
     REPLACE = [(" kid", " rapper"), (" kids", " rappers"), (" guitar", " MPC"), 
                (" child", "rapper"), (" children", " rappers"),
                (" songwriter", " beat maker"), (" song writer", " beat maker"),
-               (" song writing", " beat making"),
+               (" song writing", " beat making"), 
+               (" songwriting", " beat making"),
                (" musician", " music producer"), (" song", " trap beat"),
                (" beat", " trap beat"), (" trap trap beat", " trap beat"),
                (" Trap trap beat", " Trap beat"),
@@ -226,6 +227,7 @@ class Article:
                 n = random.randint(250, 500)
             elif (len(temp) > n) and (len(" ".join(text[i+1:])) <= n):
                 stri += temp + " "
+                i += 1
                 break
         text = " ".join(text[i:])
         stri += text
@@ -261,7 +263,7 @@ class Article:
             temp += delim.join(text[2:])
         elif 2 <= len(text):
             temp = text[0] + delim + banners[0] + delim + text[1]
-        else:
+        elif 1 <= len(text):
             temp = delim.join(text)
         self.text = temp
 
