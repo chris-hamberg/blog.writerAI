@@ -90,7 +90,6 @@ class Article:
     def write(self, slug, max_length = 800, do_sample = True, 
             temperature = 0.91):
         data["curgen iterations"] = 0
-        data["generations"] += 1
         while True:
             data["lifetime iterations"] += 1
             data["curgen iterations"] += 1
@@ -124,6 +123,7 @@ class Article:
         pprint(self.compiled_article)
         self._embed_ads()
         self._database_write()
+        data["generations"] += 1
 
 
     def _reshape(self, text, slug):
