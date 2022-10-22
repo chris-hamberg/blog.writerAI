@@ -50,7 +50,7 @@ class Article:
              "ve never", "i have never", " i never", " i haven\'t done",
              "i havent done", " i have not done", "ve not done", "sony",
              "camcorder", " shoot", " garage", "m not a music producer",
-             "m not a producer"]
+             "m not a producer", "certified", "private eye"]
 
     REPLACE = [(" kid", " rapper"), (" kids", " rappers"), (" guitar", " MPC"), 
                (" child", "rapper"), (" children", " rappers"),
