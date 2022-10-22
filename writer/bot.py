@@ -50,7 +50,7 @@ class Article:
              "ve never", "i have never", " i never", " i haven\'t done",
              "i havent done", " i have not done", "ve not done", "sony",
              "camcorder", " shoot", " garage", "m not a music producer",
-             "m not a producer", "certified", "private eye"]
+             "m not a producer", "certified", "private eye", "website",]
 
     REPLACE = [(" kid", " rapper"), (" kids", " rappers"), (" guitar", " MPC"), 
                (" child", "rapper"), (" children", " rappers"),
@@ -64,9 +64,10 @@ class Article:
                (" album", " mixtape"), (" an mixtape", " a mixtape"),
                (" cd", " mixtape"), (" band", " MCs"), (" MCss", " MCs"),
                (" a MCs", " MCs"), (" live gig show", " rap battle"),
-               (" live concert show", " rap battle"), 
+               (" live concert show", " rap battle"),
                (" live show", " rap battle"), (" live concert", " rap battle"),
                (" gig", " rap battle"), (" concert", " rap battle"),
+               (" show", " rap balle")
                (" the beatles", [" Drake", " Eminem", " Dre", " Snoop", 
                    " Tupac"]),
                (" greatest hits", " fire"), (" rock star", " rap star"),
