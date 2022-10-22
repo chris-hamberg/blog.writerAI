@@ -130,11 +130,13 @@ class Article:
         self._super_filter(text)
         text = text[len(slug):].strip()
         text = ".".join(text.split(".")[:-1]) + "."
-        assert len(text.split(" ")) >= 500, f"only {len(text.split(' '))} words."
+        assert len(text.split(" ")) >= 500, (f"only {len(text.split(' '))} "
+                                              "words (stage-1.)")
         text = self._replace(text)
         text = self._filter(text)
         text = self._duplicate_sentences(text)
-        assert len(text.split(" ")) >= 500, f"only {len(text.split(' '))} words."
+        assert len(text.split(" ")) >= 500, (f"only {len(text.split(' '))} "
+                                              "words (stage-2.)")
         text = self._format(text)
         self._unique(text)
         self.text = text
