@@ -142,7 +142,7 @@ class Article:
         relevance += count["producer"] + count["studio"] + count["mixtape"]
         relevance += count["trap"] + count["music"] + count["rap"]
         relevance += count["rapper"] + count["rapping"] + count["raps"]
-        relevance = (relevance / len(text)) * 100
+        relevance = round(relevance / len(text) * 100, 2)
         assert 1 <= relevance, "only {relevance}% relevance to the topic."
         print(f" Article has {relevance}% topical relevance.")
 
