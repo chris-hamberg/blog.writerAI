@@ -1,6 +1,10 @@
+from collections import OrderedDict
 from transformers import pipeline
 from pprint import pprint
-from writer.ads import *
+try:
+    from writer.ads import *
+except ModuleNotFoundError:
+    from ads import *
 import sqlite3
 import random
 import time
@@ -14,32 +18,68 @@ data = {"generations": 0, "lifetime iterations": 0, "curgen iterations": 0,
 class Article:
 
 
-    FLAGS = ["fuck", " ass", "dumbass", "bitch", "damn", "pussy", "cunt",
-             "dick", " tits", "boobs", " fag", "nigger", "nigga",
-             "jew", "kkk", "nazi", "whore", "slut", " hoe",
-             " cum", "clit", "douche", " kid", "amazon", "video",
-             "movie", "hollywood", " pop", "country", "guitar",
-             "bless", "heart", " cd", "twitter", "instagram", "1.", "1) ",
-             "butt", "penis", "vagina", " cock", "balls", " band", "love",
-             " photo", "google", "youtube", "microsoft", "facebook",
-             "gig", "class", "hair", "blog", "concert", "1980", "aunt",
-             " shit", "beatmix", "clothes", "naked", "beach", "http",
-             "jimmy page", "90s", "80s", "loving", "girl", "sister",
-             "b*tch", "kickass", "60s", "40 years", "50 years", "chicago bulls",
-             "songwriter", "sunday", "monday", "tuesday", "wednesday",
-             "thursday", "friday", "saturday", "january", "february",
-             "march", "april", " may ", "june", "july", "august", "september",
-             "october", "november", "december", "sound track", "soundtrack",
-             "wife"
-             ]
+    REJECT = [" child", " world", " young", " my soul", " education",]
+
+
+    FLAGS = ["fuck", " ass", "dumbass", "bitch", "damn", "pussy", "cunt", 
+             "dick", " tits", "boobs", " fag", "nigger", "nigga", "jew", "kkk", 
+             "nazi", "whore", "slut", " hoe", " cum", "clit", "douche", 
+             "amazon", "video", "movie", "hollywood", " pop", "country", 
+             "bless", "heart", "twitter", "instagram", "1.", "1) ", "2.", "2) ", 
+             "3.", "3) ", "4.", "4) ", "5.", "5) ", "6.", "6) ", "7.", "7) ", 
+             "8.", "8) ", "9.", "9) ", "10. ", "10) ", "11.", "11) ", "mymusic",
+             "butt", "penis", "vagina", " cock", "balls", "love", " photo", 
+             "google", "youtube", "microsoft", "facebook", "class", "hair", 
+             "blog", "aunt", " shit", "beatmix", "clothes", "naked", "beach", 
+             "http", "jimmy page", "90s", "80s", "20s", "30s", "40s", "50s",
+             "70s", "loving", "girl", "sister",
+             "b*tch", "60s", "40 years", "50 years", "chicago bulls", "sunday", 
+             "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", 
+             "january", "february", "march", "april", " may ", "june", "july", 
+             "august", "september", "october", "november", "december", 
+             "sound track", "soundtrack", "wife", "my name", " string", " amp", 
+             "nashville", ".html", "25 years", " i am a beginner", 
+             " i am just a beginner", "m a beginner", "m just a beginner", 
+             " afraid", " dance", " money", "m not very good", "m not good",
+             " blues", "m not as good", "Chris Brown", "1:", "2:", "3:", "4:",
+             "5:", "6:", "7:", "8:", "9:", "10:", "11:", "amateur", "portrait",
+             "ve never", "i have never", " i never", " i haven\'t done",
+             "i havent done", " i have not done", "ve not done", "sony",
+             "camcorder"]
+
+    REPLACE = [(" kid", " rapper"), (" kids", " rappers"), (" guitar", " MPC"), 
+               (" songwriter", " beat maker"), (" song writer", " beat maker"),
+               (" song writing", " beat making"),
+               (" musician", " music producer"), (" song", " trap beat"),
+               (" beat", " trap beat"), (" trap trap beat", " trap beat"),
+               (" Trap trap beat", " Trap beat"),
+               (" music trap beat", " trap beat"),
+               #(" the trap beats", " trap beats"), 
+               (" album", " mixtape"), (" an mixtape", " a mixtape"),
+               (" cd", " mixtape"), (" band", " MCs"), (" MCss", " MCs"),
+               (" a MCs", " MCs"), (" live gig show", " rap battle"),
+               (" live concert show", " rap battle"), 
+               (" live show", " rap battle"), (" live concert", " rap battle"),
+               (" gig", " rap battle"), (" concert", " rap battle"),
+               (" the beatles", [" Drake", " Eminem", " Dre", " Snoop", 
+                   " Tupac"]),
+               (" greatest hits", " fire"), (" rock star", " rap star"),
+               (" 191", " 201"), (" 192", " 201"), (" 193", " 201"),
+               (" 194", " 201"), (" 195", " 201"), (" 196", " 201"),
+               (" 197", " 201"), (" 198", " 201"), (" 199", " 201"),
+               (" 200", " 201"), (" singer", " rapper"), 
+               (" singing", " rapping"), (" sing ", " rap"), 
+               (" sing.", " rap."), (" sing,", " rap,"), (" sing?", " rap?"),
+               (" sing;", " rap;"), (" sing\\", " rap\\"), 
+               (r' sing"', r' rap"'), (r" sing)", r" rap)"),]
 
 
     def __init__(self):
         self._database = "articles/database.db"
-        self.author = "EleutherAI/gpt-neo-125M"
-        self.title  = None
-        self.desc   = None
-        self.text   = None
+        self.author    = "EleutherAI/gpt-neo-125M"
+        self.title     = None
+        self.desc      = None
+        self.text      = None
 
 
     def _set_generator(self):
@@ -47,7 +87,7 @@ class Article:
         self._generator = generator
 
 
-    def write(self, slug, max_length = 700, do_sample = True, 
+    def write(self, slug, max_length = 800, do_sample = True, 
             temperature = 0.91):
         data["curgen iterations"] = 0
         data["generations"] += 1
@@ -64,99 +104,142 @@ class Article:
             text = result[0]["generated_text"]
             time.sleep(1)
             try:
-                self._filter(text)
+                self._reshape(text, slug)
                 break
-            except AssertionError as e:
+            except (AttributeError, AssertionError) as e:
                 del result, text
-                data["fails"] += 1
+                #data["fails"] += 1
                 print(f" {data['curgen iterations']} <[CURGEN"
                       f" ITERATIONS]> of {data['lifetime iterations']}"
                       f" <[ITERATIONS]> across {data['generations']}"
                        " <[ARTICLE GENERATIONS]>")
-                print(f" {str(data['fails']).zfill(10)} [---<<   iteration" 
-                       " rejections    >>---] (global)")
+                #print(f" {str(data['fails']).zfill(10)} [---<<   iteration" 
+                #       " rejections    >>---] (global)")
                 print(f" This article iteration did not meet standard: {str(e)}")
                 print(" Sleeping 10 seconds for garbage collection. Retrying.\n")
                 time.sleep(10)
                 continue
-        self._parse(text, slug)
+        self._parse(text)
         self._compile()
         pprint(self.compiled_article)
+        self._embed_ads()
         self._database_write()
 
 
-    def _filter(self, text):
-        length = len(text)
-        newlines = text.count("\n\n")
-        quotes   = text.count('\"')
-        hyphens  = text.count("-")
-        slashes  = text.count("\\")
-        t        = text.lower()
-        assert length   >= 1000,           f"only {length} characters."
-        assert newlines <  6,              f"{newlines} double newlines."
-        assert quotes   <  6,              f"{quotes} quotes."
-        assert hyphens  <  6,              f"{hyphens} hyphens."
-        assert slashes  <  5,              f"{slashes} back slashes."
-        
-        for flag in __class__.FLAGS:
-            assert not t.count(flag),      f"prohibited term '{flag}'"
+    def _reshape(self, text, slug):
+        self._super_filter(text)
+        text = text[len(slug):].strip()
+        text = ".".join(text.split(".")[:-1]) + "."
+        assert len(text.split(" ")) >= 500, f"only {len(text.split(' '))} words."
+        text = self._replace(text)
+        text = self._filter(text)
+        text = self._duplicate_sentences(text)
+        assert len(text.split(" ")) >= 500, f"only {len(text.split(' '))} words."
+        text = self._format(text)
+        self._unique(text)
+        self.text = text
 
+
+    def _super_filter(self, text):
+        for flag in __class__.REJECT:
+            if text.lower().find(flag) != -1:
+                assert False, (f"Article rejected for containing the "
+                               f"term '{flag.lstrip()}'.")
+
+
+    def _duplicate_sentences(self, text):
+        ordered_set = OrderedDict()
+        text = text.split(".")
+        for sentence in text:
+            ordered_set[sentence] = None
+        text = ".".join(ordered_set.keys())
+        return text
+
+
+    def _replace(self, text):
+        for word, replacement in __class__.REPLACE:
+            if isinstance(replacement, list):
+                replacement = random.choice(replacement)
+            if (word == " song") and (text.lower().find("trap beat") != -1):
+                continue
+            elif (word == " song") and (text.lower().find("beat") != -1):
+                continue
+            text = text.replace(word.title(), replacement.title())
+            text = text.replace(word, replacement)
+        return text
+
+
+    def _unique(self, text):
+        t = text.lower()
         t = t.split(" ")
         t = [s.strip(".") for s in t if len(s.strip(".")) > 5]
         percent_unique = round((len(set(t)) / len(t)) * 100, 2)
-        assert percent_unique >= 30,       f"only {percent_unique}% percent unique."
+        assert percent_unique >= 40, f"only {percent_unique}% percent unique."
 
 
-    def _parse(self, text, slug):
-        self.text  = text[len(slug):].strip()
+    def _filter(self, text):
+        text, temp = text.split("."), []
+        for sentence in text:
+            if sentence.count("-") > 3:    continue
+            elif sentence.count("\\") > 3: continue
+            for flag in __class__.FLAGS:
+                if sentence.lower().count(flag.lower()):
+                    break
+            else:
+                temp.append(sentence)
+        return ".".join(temp)
+
+
+    def _format(self, text):
+        text, stri, queue = text.split("\n\n"), "", []
+        n = random.randint(500, 800)
+        for i in range(len(text)):
+            queue.append(text[i])
+            temp = " ".join(queue)
+            if (len(temp) > n) and (len(" ".join(text[i+1:])) > n):
+                stri += temp + "\n\n"
+                queue.clear()
+                n = random.randint(250, 500)
+            elif (len(temp) > n) and (len(" ".join(text[i+1:])) <= n):
+                stri += temp + " "
+                break
+        text = " ".join(text[i:])
+        stri += text
+        return stri
+        
+
+    def _parse(self, text):
         self.text  = self.text.replace('"', '\"')
         self.text  = self.text.replace("'", "")
         while not self.title:
             self.title = random.choice(self.text.split(".")).strip()
             self.title = self.title.title()
-        self.title = " ".join(self.title.split(" ")[:7])
+            self.title = max(self.title.split(","), key = lambda t: len(t))
+        self.title = " ".join(self.title.split(" ")[:random.randint(5, 8)])
         self.desc  = self.text[:80] + "..."
-        self.text  = ".".join(self.text.split(".")[:-1]) + "."
         self.text  = "<p>" + self.text.replace("\n\n", "</p> <p>")
         self.text  = self.text.replace("<p></p>", "")
-        self.text  = self.text.replace(" beats", " trap beats")
-        self.text  = self.text.replace("Beats ", "Trap beats ")
-        self.text  = self.text.replace(" trap trap", " trap")
         self.text  = f"<p>Written by: {self.author} Robot.</p>" + self.text
-        self.text  = self.text.split("</p> <p>")
 
-        text = [self.text[0]]
 
+    def _embed_ads(self):
+        temp = str()
+        delim = "</p> <p>"
+        text = self.text.split(delim)
         banners = [BANNER_1, BANNER_2, BANNER_3]
-
-        index = 1
-        position = 0
-        minimum  = 350
-        for i in range(len(self.text)):
-            if ((2 + i) <= len(self.text)):
-                index += 1
-                if (0 != i):
-                    text += [self.text[i]]
-                if (minimum <= len(self.text[i])) and (position < len(banners)):
-
-                    try:
-                        t = self.text[i+1]
-                        assert 500 <= len(str().join(self.text[i+1:]))
-                    except (IndexError, AssertionError):
-                        continue
-                    else:
-                        text += [banners[position]]
-                        position += 1
-                        minimum = 350
-
-                elif (position < len(banners)):
-                    minimum -= len(self.text[i])
-
-        self.text = text + self.text[index:]
-        self.text += [BANNER_END]
-
-        self.text  = "</p> <p>".join(self.text)
-        self.text = self.text + "</p>"
+        if 4 <= len(text):
+            for i in range(3):
+                temp += text[i] + delim + banners[i] + delim
+            temp += delim.join(text[3:])
+        elif 3 <= len(text):
+            for i in range(2):
+                temp += text[i] + delim + banners[i] + delim
+            temp += delim.join(text[2:])
+        elif 2 <= len(text):
+            temp = text[0] + delim + banners[0] + delim + text[1]
+        else:
+            temp = delim.join(text)
+        self.text = temp
 
 
     def _compile(self):
