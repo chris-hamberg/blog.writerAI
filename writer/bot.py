@@ -67,7 +67,7 @@ class Article:
                (" live concert show", " rap battle"),
                (" live show", " rap battle"), (" live concert", " rap battle"),
                (" gig", " rap battle"), (" concert", " rap battle"),
-               (" show", " rap balle")
+               (" show", " rap battle"),
                (" the beatles", [" Drake", " Eminem", " Dre", " Snoop", 
                    " Tupac"]),
                (" greatest hits", " fire"), (" rock star", " rap star"),
