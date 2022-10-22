@@ -18,7 +18,7 @@ data = {"generations": 0, "lifetime iterations": 0, "curgen iterations": 0,
 class Article:
 
 
-    REJECT = [" child", " world", " young", " my soul", " education",]
+    REJECT = [" childhood", " world", " young", " my soul", " education",]
 
 
     FLAGS = ["fuck", " ass", "dumbass", "bitch", "damn", "pussy", "cunt", 
@@ -49,6 +49,7 @@ class Article:
              "camcorder"]
 
     REPLACE = [(" kid", " rapper"), (" kids", " rappers"), (" guitar", " MPC"), 
+               (" child", "rapper"), (" children", " rappers"),
                (" songwriter", " beat maker"), (" song writer", " beat maker"),
                (" song writing", " beat making"),
                (" musician", " music producer"), (" song", " trap beat"),
