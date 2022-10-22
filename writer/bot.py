@@ -7,6 +7,7 @@ from collections import OrderedDict
 from collections import Counter
 
 from transformers import pipeline
+from datetime import datetime
 from pprint import pprint
 import sqlite3
 import random
@@ -98,6 +99,7 @@ class Article:
     def write(self, slug, max_length = 800, do_sample = True, 
             temperature = 0.91):
         data["curgen iterations"] = 0
+        now = datetime.utcnow()
         while True:
             data["lifetime iterations"] += 1
             data["curgen iterations"] += 1
@@ -117,13 +119,13 @@ class Article:
                 break
             except (AttributeError, AssertionError) as e:
                 del result, text
-                #data["fails"] += 1
+                minutes = int((datetime.utcnow() - now).total_seconds() / 60)
                 print(f" {data['curgen iterations']} <[CURGEN"
                       f" ITERATIONS]> of {data['lifetime iterations']}"
                       f" <[ITERATIONS]> across {data['generations']}"
                        " <[ARTICLE GENERATIONS]>")
-                #print(f" {str(data['fails']).zfill(10)} [---<<   iteration" 
-                #       " rejections    >>---] (global)")
+                print(f" [GENERATION {data['generations']}]"
+                      f"[TIME]: {minutes} minutes.")
                 print(f" This article iteration did not meet standard: {str(e)}")
                 print(" Sleeping 10 seconds for garbage collection. Retrying.\n")
                 time.sleep(10)
@@ -134,6 +136,8 @@ class Article:
         self._embed_ads()
         self._database_write()
         data["generations"] += 1
+        minutes = int((datetime.utcnow() - now).total_seconds() / 60)
+        print(f" [GENERATION {data['generations']}][TIME]: {minutes} minutes.")
 
 
     def _validate(self):
