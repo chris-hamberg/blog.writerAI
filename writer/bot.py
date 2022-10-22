@@ -22,7 +22,8 @@ data = {"generations": 0, "lifetime iterations": 0, "curgen iterations": 0,
 class Article:
 
 
-    REJECT = [" childhood", " world", " young", " my soul", " education",]
+    REJECT = [" childhood", " world", " young", " my soul", " education", 
+            " wood "]
 
 
     FLAGS = ["fuck", " ass", "dumbass", "bitch", "damn", "pussy", "cunt", 
@@ -51,18 +52,25 @@ class Article:
              "ve never", "i have never", " i never", " i haven\'t done",
              "i havent done", " i have not done", "ve not done", "sony",
              "camcorder", " shoot", " garage", "m not a music producer",
-             "m not a producer", "certified", "private eye", "website",]
+             "m not a producer", "certified", "private eye", "website",
+             "ve no idea what I am doing", "school", " mom", " mother", 
+             " camera", " pictures", r"i don't know much", "i dont know much",
+             " interview", r"i didn't know how", "i didnt know how", "email",
+             " create more people", " pic ", " in training", " sex"]
 
     REPLACE = [(" kid", " rapper"), (" kids", " rappers"), (" guitar", " MPC"), 
                (" child", "rapper"), (" children", " rappers"),
                (" songwriter", " beat maker"), (" song writer", " beat maker"),
                (" song writing", " beat making"), 
                (" songwriting", " beat making"),
-               (" musician", " music producer"), (" song", " trap beat"),
+               (" musician", " music producer"),
+               (" trap", " trap beat"), (" trap beat beat", " trap beat"),
+               (" song", " trap beat"),
                (" beat", " trap beat"), (" trap trap beat", " trap beat"),
                (" Trap trap beat", " Trap beat"),
                (" music trap beat", " trap beat"),
                #(" the trap beats", " trap beats"), 
+
                (" album", " mixtape"), (" an mixtape", " a mixtape"),
                (" cd", " mixtape"), (" band", " MCs"), (" MCss", " MCs"),
                (" a MCs", " MCs"), (" live gig show", " rap battle"),
@@ -77,10 +85,12 @@ class Article:
                (" 194", " 201"), (" 195", " 201"), (" 196", " 201"),
                (" 197", " 201"), (" 198", " 201"), (" 199", " 201"),
                (" 200", " 201"), (" singer", " rapper"), 
-               (" singing", " rapping"), (" sing ", " rap"), 
+               (" singing", " rapping"), (" sing ", " rap "), 
                (" sing.", " rap."), (" sing,", " rap,"), (" sing?", " rap?"),
                (" sing;", " rap;"), (" sing\\", " rap\\"), 
-               (r' sing"', r' rap"'), (r" sing)", r" rap)"),]
+               (r' sing"', r' rap"'), (r" sing)", r" rap)"),
+               (" human", " producer"), (" artist", " rapper"),
+               (" an artist", " a rapper")]
 
 
     def __init__(self):
@@ -191,7 +201,7 @@ class Article:
                 replacement = random.choice(replacement)
             if (word == " song") and (text.lower().find("trap beat") != -1):
                 continue
-            elif (word == " song") and (text.lower().find("beat") != -1):
+            elif (word == " song") and (text.lower().find(" beat") != -1):
                 continue
             text = text.replace(word.title(), replacement.title())
             text = text.replace(word, replacement)
