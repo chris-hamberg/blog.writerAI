@@ -49,7 +49,8 @@ class Article:
              "5:", "6:", "7:", "8:", "9:", "10:", "11:", "amateur", "portrait",
              "ve never", "i have never", " i never", " i haven\'t done",
              "i havent done", " i have not done", "ve not done", "sony",
-             "camcorder"]
+             "camcorder", " shoot", " garage", "m not a music producer",
+             "m not a producer"]
 
     REPLACE = [(" kid", " rapper"), (" kids", " rappers"), (" guitar", " MPC"), 
                (" child", "rapper"), (" children", " rappers"),
@@ -143,6 +144,7 @@ class Article:
         relevance += count["rapper"] + count["rapping"] + count["raps"]
         relevance = (relevance / len(text)) * 100
         assert 1 <= relevance, "only {relevance}% relevance to the topic."
+        print(f" Article has {relevance}% topical relevance.")
 
 
     def _reshape(self, text, slug):
