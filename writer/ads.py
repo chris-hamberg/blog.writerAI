@@ -1,8 +1,8 @@
 BANNER_1 = (
 
-            r'<center> <div class="banner-728"> <script data-cfasync="false" type="text/javascript" src="//onclickprediction.com/a/display.php?r=6372338"></script> </div> </center>'
+            r'<center> <div class="banner-728"> <script data-cfasync="false" type="text/javascript" src="//onclickprediction.com/a/display.php?r=6375466"></script> </div> </center>'
 
-            r'<center> <div class="banner-468"> <script data-cfasync="false" type="text/javascript" src="//onclickprediction.com/a/display.php?r=6373442"></script> </div> </center>'
+            r'<center> <div class="banner-468"> <script data-cfasync="false" type="text/javascript" src="//onclickprediction.com/a/display.php?r=6375478"></script> </div> </center>'
             
             r'<center> <div class="banner-234">'
                 r'<script type="text/javascript">'
@@ -27,20 +27,20 @@ BANNER_1 = (
             r'</div> </center>')
 
 
-BANNER_2 = (r'<center> <div class="banner-728"> <script data-cfasync="false" type="text/javascript" src="//onclickprediction.com/a/display.php?r=6373394"></script> </div> </center>'
+BANNER_2 = (r'<center> <div class="banner-728"> <script data-cfasync="false" type="text/javascript" src="//onclickprediction.com/a/display.php?r=6375470"></script> </div> </center>'
 
-            r'<center> <div class="banner-468"> <script data-cfasync="false" type="text/javascript" src="//onclickprediction.com/a/display.php?r=6373446"></script> </div> </center>')
+            r'<center> <div class="banner-468"> <script data-cfasync="false" type="text/javascript" src="//onclickprediction.com/a/display.php?r=6375482"></script> </div> </center>')
 
 
 BANNER_3 = (r'<center>'
                 r'<div class="banner-728">'
                     r'<script data-cfasync="false"'
                     r'type="text/javascript"'
-                    r'src="//onclickprediction.com/a/display.php?r=6373426">'
+                    r'src="//onclickprediction.com/a/display.php?r=6375474">'
                     r'</script>'
                 r'</div>' 
             r'</center>'
 
-            r'<center> <div class="banner-468"> <script data-cfasync="false" type="text/javascript" src="//onclickprediction.com/a/display.php?r=6373450"></script> </div> </center>'
+            r'<center> <div class="banner-468"> <script data-cfasync="false" type="text/javascript" src="//onclickprediction.com/a/display.php?r=6375486"></script> </div> </center>'
 
             )

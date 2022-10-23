@@ -12,11 +12,8 @@ class Endpoint:
         self.headers  = {"Content-Type": "application/json"}
 
 
-    def post(self, article, test):
-        if test:
-            url = "http://127.0.0.1:5000/api/article/"
-        else:
-            url = f"{self.url}/api/article/"
+    def post(self, article):
+        url = f"{self.url}/api/article/"
         data = {
             "title"   : article.title,
             "author"  : article.author,

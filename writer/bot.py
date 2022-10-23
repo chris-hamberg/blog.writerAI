@@ -8,7 +8,6 @@ from collections import Counter
 
 from transformers import pipeline
 from datetime import datetime
-from pprint import pprint
 import sqlite3
 import random
 import time
@@ -19,11 +18,21 @@ data = {"generations": 0, "lifetime iterations": 0, "curgen iterations": 0,
         "fails": 0}
 
 
+MIN = 500 # NOTE supposed to be 500
+ARTISTS = [" Drake", " Eminem", " Dre", " Snoop",  " Tupac"]
+BEATS   = [" trap beat", " trap banger", " banger", " beat", " sick beat",
+           " trap beat", " trap beat", " trap beat", " wicked beat", 
+           " sick trap beat", " wicked trap beat", " sick banger", 
+           " wicked banger", " sick trap banger", " wicked trap banger", 
+           " trap beat", " trap beat"]
+
+
 class Article:
 
 
-    REJECT = [" childhood", " world", " young", " my soul", " education", 
-            " wood "]
+    REJECT = ["childhood", "world", "young", "my soul", "education", 
+              " wood ", "india", "canada", "france", "ireland" "germany",
+              "a&r"]
 
 
     FLAGS = ["fuck", " ass", "dumbass", "bitch", "damn", "pussy", "cunt", 
@@ -56,9 +65,24 @@ class Article:
              "ve no idea what I am doing", "school", " mom", " mother", 
              " camera", " pictures", r"i don't know much", "i dont know much",
              " interview", r"i didn't know how", "i didnt know how", "email",
-             " create more people", " pic ", " in training", " sex"]
+             " create more people", " pic ", " in training", " sex", " indie", 
+             " dad", " bother", " mother", " mom", " father", " sister", 
+             " folk", " customer", " son", " daughter", " niece", " nephew",
+             "i do not have a lot of experience", 
+             "i don\'t have a lot of experience",
+             "i dont have a lot of experience", "i do not write my own music",
+             "i don\'t write my own music", "i dont write my own music",
+             "i don\'t know", "i dont know", "i do not know", 
+             "thats very interesting", "that\'s very interesting", 
+             "that is very interesting", "thats really interesting",
+             "that\'s really interesting", "that is really interesting", 
+             " kill ", "@gmail", ".com", "@hotmail", ".net", ".org", " act",
+             ]
 
-    REPLACE = [(" kid", " rapper"), (" kids", " rappers"), (" guitar", " MPC"), 
+    REPLACE = [(" kid ", " rapper "), (" kids ", " rappers "), 
+               (" rhythm guitar", " MPC"),
+               (" lead guitar", " MPC"), (" bass guitar", " MPC"), 
+               (" guitar", " MPC"),
                (" child", "rapper"), (" children", " rappers"),
                (" songwriter", " beat maker"), (" song writer", " beat maker"),
                (" song writing", " beat making"), 
@@ -70,27 +94,33 @@ class Article:
                (" Trap trap beat", " Trap beat"),
                (" music trap beat", " trap beat"),
                #(" the trap beats", " trap beats"), 
-
+               #(" trap beat", BEATS),
                (" album", " mixtape"), (" an mixtape", " a mixtape"),
-               (" cd", " mixtape"), (" band", " MCs"), (" MCss", " MCs"),
+               (" cd", " mixtape"), (" band", " rap group"), (" MCss", " MCs"),
                (" a MCs", " MCs"), (" live gig show", " rap battle"),
                (" live concert show", " rap battle"),
                (" live show", " rap battle"), (" live concert", " rap battle"),
                (" gig", " rap battle"), (" concert", " rap battle"),
-               (" show", " rap battle"),
-               (" the beatles", [" Drake", " Eminem", " Dre", " Snoop", 
-                   " Tupac"]),
+               #(" show", " rap battle"),
+               (" the beatles", ARTISTS), (" the prodigy", ARTISTS),
                (" greatest hits", " fire"), (" rock star", " rap star"),
                (" 191", " 201"), (" 192", " 201"), (" 193", " 201"),
                (" 194", " 201"), (" 195", " 201"), (" 196", " 201"),
                (" 197", " 201"), (" 198", " 201"), (" 199", " 201"),
-               (" 200", " 201"), (" singer", " rapper"), 
+               (" 200", " 201"), (" singer", " MC"), (" a MC", " an MC"), 
                (" singing", " rapping"), (" sing ", " rap "), 
                (" sing.", " rap."), (" sing,", " rap,"), (" sing?", " rap?"),
                (" sing;", " rap;"), (" sing\\", " rap\\"), 
                (r' sing"', r' rap"'), (r" sing)", r" rap)"),
                (" human", " producer"), (" artist", " rapper"),
-               (" an artist", " a rapper")]
+               (" an artist", " a rapper"), (" bass drum", " sick 808"),
+               (" trap beat drummer", " trap beat maker"), 
+               (" neighborhood", " hood"), (" an rapper", " a rapper"),
+               (" karaoke performance", " rap battle"), 
+               (" rap rap group", " rap group")]
+
+
+    KEYWORDS = [" rap", " MPC", " beat", " producer", " mixtape", " MC",]
 
 
     def __init__(self):
@@ -106,7 +136,7 @@ class Article:
         self._generator = generator
 
 
-    def write(self, slug, max_length = 800, do_sample = True, 
+    def write(self, slug, test = None, max_length = 800, do_sample = True, 
             temperature = 0.91):
         data["curgen iterations"] = 0
         now = datetime.utcnow()
@@ -117,7 +147,7 @@ class Article:
             self.title = None
             self.desc  = None
             self._set_generator()
-            result = self._generator(slug, max_length = max_length, 
+            result = self._generator(slug, max_length = 250,
                     do_sample = do_sample, temperature = temperature)
             del self._generator
             text = result[0]["generated_text"]
@@ -130,24 +160,28 @@ class Article:
             except (AttributeError, AssertionError) as e:
                 del result, text
                 minutes = int((datetime.utcnow() - now).total_seconds() / 60)
-                print(f" {data['curgen iterations']} <[CURGEN"
-                      f" ITERATIONS]> of {data['lifetime iterations']}"
-                      f" <[ITERATIONS]> across {data['generations']}"
-                       " <[ARTICLE GENERATIONS]>")
-                print(f" [GENERATION {data['generations']}]"
-                      f"[TIME]: {minutes} minutes.")
+                print(f"\n [GENERATION]"
+                      f"[<< {str(data['generations']).zfill(5)} >>]"
+                      f"[TIME]: {minutes} minutes. "
+                      f"{data['curgen iterations']} of {data['lifetime iterations']}"
+                      f" iterations.")
                 print(f" This article iteration did not meet standard: {str(e)}")
                 print(" Sleeping 10 seconds for garbage collection. Retrying.\n")
                 time.sleep(10)
                 continue
 
         self._compile()
-        pprint(self.compiled_article)
-        self._embed_ads()
-        self._database_write()
+        print(self.compiled_article.replace("</p><p>", "\n\n"))
+        #self._embed_ads()
+        if not test:
+            self._database_write()
+        else:
+            print("Skipping database write because testing.")
         data["generations"] += 1
         minutes = int((datetime.utcnow() - now).total_seconds() / 60)
-        print(f" [GENERATION {data['generations']}][TIME]: {minutes} minutes.")
+        print(f" [SUCCESS] : [GENERATION][<< "
+              f"{str(data['generations']).zfill(5)} >>][TIME]:"
+              f" {minutes} minutes.")
 
 
     def _validate(self):
@@ -159,7 +193,7 @@ class Article:
         relevance += count["trap"] + count["music"] + count["rap"]
         relevance += count["rapper"] + count["rapping"] + count["raps"]
         relevance = round(relevance / len(text) * 100, 2)
-        assert 1 <= relevance, "only {relevance}% relevance to the topic."
+        assert 1 <= relevance, f"only {relevance}% relevance to the topic."
         print(f" Article has {relevance}% topical relevance.")
 
 
@@ -167,13 +201,13 @@ class Article:
         self._super_filter(text)
         text = text[len(slug):].strip()
         text = ".".join(text.split(".")[:-1]) + "."
-        assert len(text.split(" ")) >= 500, (f"only {len(text.split(' '))} "
-                                              "words (stage-1.)")
+        #assert len(text.split(" ")) >= MIN, (f"only {len(text.split(' '))} "
+        #                                      "words (stage-1.)")
         text = self._replace(text)
         text = self._filter(text)
         text = self._duplicate_sentences(text)
-        assert len(text.split(" ")) >= 500, (f"only {len(text.split(' '))} "
-                                              "words (stage-2.)")
+        #assert len(text.split(" ")) >= MIN, (f"only {len(text.split(' '))} "
+        #                                      "words (stage-2.)")
         text = self._format(text)
         self._unique(text)
         self.text = text
@@ -212,8 +246,11 @@ class Article:
         t = text.lower()
         t = t.split(" ")
         t = [s.strip(".") for s in t if len(s.strip(".")) > 5]
-        percent_unique = round((len(set(t)) / len(t)) * 100, 2)
-        assert percent_unique >= 40, f"only {percent_unique}% percent unique."
+        try:
+            percent_unique = round((len(set(t)) / len(t)) * 100, 2)
+            assert percent_unique >= 40, f"only {percent_unique}% unique."
+        except ZeroDivisionError:
+            assert False, f"only 0% unique." 
 
 
     def _filter(self, text):
@@ -246,25 +283,176 @@ class Article:
         text = " ".join(text[i:])
         stri += text
         return stri
+
+    
+    def _make_title(self):
+        sentences = self.text
+        sentences = sentences.replace(",", " ")
+        sentences = sentences.replace("?", " ")
+        sentences = sentences.replace("!", " ")
+        sentences = sentences.replace(r"(", " ")
+        sentences = sentences.replace(r")", " ")
+        sentences = sentences.split(".")
+          
+        results = []    
+        for keyword in __class__.KEYWORDS:
+            for sentence in sentences:
+                if sentence.lower().count("i am a music producer"):               
+                    continue
+                elif sentence.lower().count("ixxxm a music producer"):
+                    continue
+                elif sentence.lower().count("i`m a music producer"):
+                    continue
+                elif sentence.lower().count("i am a producer"):
+                    continue
+                elif sentence.lower().count("ixxxm a producer"):
+                    continue
+                elif sentence.lower().count("i`m a producer"):
+                    continue
+                elif sentence.lower().count("i am a rapper"):
+                    continue
+                elif sentence.lower().count("ixxxm a rapper"):
+                    continue
+                elif sentence.lower().count("i`m a rapper"):
+                    continue
+                elif sentence.lower().count(keyword):
+                    results.append(sentence)
+
+        if not results:
+            self.title = random.choice(sentences)
+        else:
+            self.title = min(results, key = lambda t: len(t))
+
+        self.title = self.title.title()
+
+        #input(f"stage-1: {self.title}")
         
+        if 9 <= len(self.title.split(" ")):
+            self.title = self.title.split(" ")
+            if 15 <= len(self.title):
+                center = len(self.title) // 3
+                parts = [self.title[:center], self.title[center:center+center],
+                         self.title[center+center:]]
+            else:
+                center = len(self.title) // 2
+                parts = [self.title[:center], self.title[center:]]
+            for keyword in __class__.KEYWORDS:
+                for part in parts:
+                    part = " ".join(part)
+                    if part.lower().count(keyword):
+                        self.title = part
+                        break
+                if (self.title == part):
+                    break
+
+        #input(f"stage-2: {self.title}")
+
+        if isinstance(self.title, str):
+            self.title = self.title.split(" ")
+
+        while (self.title) and (len(self.title[-1]) <= 2):
+            self.title = self.title[:-1]
+
+        while 45 <= len(" ".join(self.title)):
+            self.title = self.title[:-2]
+
+        while (self.title) and (len(self.title[-1]) <= 2):
+            self.title = self.title[:-1]
+        
+        self.title = " ".join(self.title)
+
+        #input(f"stage-3: {self.title}")
+
+        #self.title = self.title.rstrip(" And")
+        #self.title = self.title.rstrip(" A")
+        #self.title = self.title.rstrip(",")
+        #self.title = self.title.rstrip(", ")
+        #self.title = self.title.rstrip(" bee")
+
+        self.title = self.title.lstrip("Of ")
+        self.title = self.title.lstrip("And ")
+        #self.title = self.title.lstrip("Talks ")
+        #self.title = self.title.lstrip("Hen ")
+        self.title = self.title.lstrip("By ")
+        #self.title = self.title.lstrip("o ")
+        #self.title = self.title.lstrip("his ")
+
+        #input(f"stage-4: {self.title}")
+
+        t = ""
+        for e, word in enumerate(self.title.split(" ")):
+            if ((not e) or (4 <= len(word))) or (word == "I") or (
+                    word == "Rap") or (word == "CD"):
+                t += word + " "
+            else:
+                t += word.lower() + " "
+        self.title = t.rstrip(" ")
+
+        #input(f"stage-5: {self.title}")
+
+        replacements = [(" Down", " down"), (" Onto", " onto"),
+                (" Over", " over"), (" From", " from"), 
+                (" Past", " past"), (" Into", " into"),
+                (" Upon", " upon"), (" Near", " near"),
+                (" With", " with"), (" Than", " than"),
+                (" That", " that"), (" Till", " till"),
+                (" When", " when"), (" Once", " once"),]
+        for o, n in replacements:
+            self.title = self.title.replace(o, n)
+
+        #input(f"stage-6: {self.title}")
+
+        try:
+            while self.title.split(" ")[0][0].islower():
+                self.title = self.title.split(" ")[1:]
+                self.title = " ".join(self.title)
+        except IndexError as e:
+            raise AssertionError("Title creation failed.")
+
+        self.title = self.title.replace("\"", "")
+
+        try:
+            self.title = self.title.split(" ")
+            if self.title[-1][0].islower():
+                self.title = " ".join(self.title)
+                self.title += "..."
+            else:
+                self.title = " ".join(self.title)
+        except IndexError as e:
+            raise AssertionError("Title creation failed.")
+
+        assert self.title, "Title creation failed."
+            
 
     def _parse(self):
-        self.text  = self.text.replace('"', '\"')
-        self.text  = self.text.replace("'", "")
-        while not self.title:
-            self.title = random.choice(self.text.split(".")).strip()
-            self.title = self.title.title()
-            self.title = max(self.title.split(","), key = lambda t: len(t))
-        self.title = " ".join(self.title.split(" ")[:random.randint(5, 8)])
+        self.text = self.text.replace('"', 'qqq')
+        self.text = self.text.replace("”", "qqq")
+        self.text = self.text.replace("“", "qqq")
+        self.text = self.text.replace("'", "xxx")
+        self.text = self.text.replace(r"`", "xxx")
+        self.text = self.text.replace(r"’", "xxx")
+        self._make_title()
+        self.text = self.text.replace("xxx", "$$$")
+        self.text = self.text.replace("qqq", "###")
+
         self.desc  = self.text[:80] + "..."
-        self.text  = "<p>" + self.text.replace("\n\n", "</p> <p>")
+        self.text  = "<p>" + self.text.replace("\n\n", "</p><p>")
         self.text  = self.text.replace("<p></p>", "")
-        #self.text  = f"<p>Written by: {self.author} Robot.</p>" + self.text
+        if not self.text.endswith("."):
+            if not self.text.endswith("?"):
+                if not self.text.endswith("!"):
+                    if not self.text.endswith(". ")
+                        self.text += "."
+        if self.text.endswith(". "):
+            self.text = self.text.rstrip(" ")
+        if not self.text.endswith("</p>"):
+            self.text += "</p>"
+        self.text = self.text.replace("..", ".")
 
 
     def _embed_ads(self):
         temp = str()
-        delim = "</p> <p>"
+        delim = "</p><p>"
         text = self.text.split(delim)
         banners = [BANNER_1, BANNER_2, BANNER_3]
         if 4 <= len(text):

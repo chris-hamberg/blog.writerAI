@@ -11,27 +11,30 @@ def main(n, slug, test):
     counter  = 0
     errors   = 0
     while (counter < int(n)):
+
         article = Article()
-        article.write(slug)
+        article.write(slug, test)
+
+        if test:
+            print("Skipping upload due to testing.")
+            counter += 1
+            continue
+            
         data = reader.read()
-        r = endpoint.post(data, test)
+        r = endpoint.post(data)
         print(f"\nHTTP {r.status_code}")
         del article
         if (r.status_code == 201) or (r.status_code == 200):
-            if not test:
-                reader.update(data)
-            else:
-                reader.delete(data)
+            reader.update(data)
             counter += 1
             print(f"Wrote {counter}/{n} articles. {errors} error(s).")
         else:
             reader.delete(data)
             errors += 1
-            if not test:
-                print(f"{r.json()}")
-                print(f"Failed to write. {counter}/{n} articles written."
-                      f" {errors} error(s).")
-        if ((not test) and (counter < int(n))):
+            print(f"{r.json()}")
+            print(f"Failed to write. {counter}/{n} articles written."
+                  f" {errors} error(s).")
+        if (counter < int(n)):
             del data, r
             print(f"Sleeping 1 minute(s).\n")
             time.sleep(60)
