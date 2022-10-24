@@ -289,6 +289,7 @@ class Article:
         sentences = sentences.replace("!", " ")
         sentences = sentences.replace(r"(", " ")
         sentences = sentences.replace(r")", " ")
+        sentences = sentences.replace("qqq", "")
         sentences = sentences.split(".")
           
         results = []    
