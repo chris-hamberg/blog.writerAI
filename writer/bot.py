@@ -431,7 +431,9 @@ class Article:
         self.text = self.text.replace(r"’", "xxx")
         self._make_title()
         self.text = self.text.replace("xxx", "$$$")
+        self.text = self.text.replace("Xxx", "$$$")
         self.text = self.text.replace("qqq", "###")
+        self.text = self.text.replace("Qqq", "###")
 
         self.desc  = self.text[:80] + "..."
         self.text  = "<p>" + self.text.replace("\n\n", "</p><p>")
