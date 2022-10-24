@@ -72,7 +72,7 @@ class Article:
              "that is very interesting", "thats really interesting",
              "that\'s really interesting", "that is really interesting", 
              " kill ", "@gmail", ".com", "@hotmail", ".net", ".org", " act",
-             "example:", "dramer", "myspace", " tv ",
+             "example:", "dramer", "myspace", " tv ", " episode",
              ]
 
     REPLACE = [(" kid ", " rapper "), (" kids ", " rappers "), 
