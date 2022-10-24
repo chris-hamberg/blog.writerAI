@@ -398,7 +398,8 @@ class Article:
                 (" Upon", " upon"), (" Near", " near"),
                 (" With", " with"), (" Than", " than"),
                 (" That", " that"), (" Till", " till"),
-                (" When", " when"), (" Once", " once"),]
+                (" When", " when"), (" Once", " once"),
+                (" This", " this"), (" That", " that")]
         for o, n in replacements:
             self.title = self.title.replace(o, n)
 
