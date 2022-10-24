@@ -77,6 +77,7 @@ class Article:
              "that is very interesting", "thats really interesting",
              "that\'s really interesting", "that is really interesting", 
              " kill ", "@gmail", ".com", "@hotmail", ".net", ".org", " act",
+             "example:", "dramer",
              ]
 
     REPLACE = [(" kid ", " rapper "), (" kids ", " rappers "), 
@@ -117,7 +118,8 @@ class Article:
                (" trap beat drummer", " trap beat maker"), 
                (" neighborhood", " hood"), (" an rapper", " a rapper"),
                (" karaoke performance", " rap battle"), 
-               (" rap rap group", " rap group")]
+               (" rap rap group", " rap group"), 
+               (" drum trap beat", " drum beat"),]
 
 
     KEYWORDS = [" rap", " MPC", " beat", " producer", " mixtape", " MC",]
