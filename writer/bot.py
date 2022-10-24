@@ -1,8 +1,3 @@
-try:
-    from writer.ads import *
-except ModuleNotFoundError:
-    from ads import *
-
 from collections import OrderedDict
 from collections import Counter
 
@@ -119,7 +114,8 @@ class Article:
                (" neighborhood", " hood"), (" an rapper", " a rapper"),
                (" karaoke performance", " rap battle"), 
                (" rap rap group", " rap group"), 
-               (" drum trap beat", " drum beat"),]
+               (" drum trap beat", " drum beat"), 
+               (" music festival", (" rap battle"),]
 
 
     KEYWORDS = [" rap", " MPC", " beat", " producer", " mixtape", " MC",]
@@ -174,7 +170,6 @@ class Article:
 
         self._compile()
         print(self.compiled_article.replace("</p><p>", "\n\n"))
-        #self._embed_ads()
         if not test:
             self._database_write()
         else:
@@ -451,26 +446,6 @@ class Article:
         if not self.text.endswith("</p>"):
             self.text += "</p>"
         self.text = self.text.replace("..", ".")
-
-
-    def _embed_ads(self):
-        temp = str()
-        delim = "</p><p>"
-        text = self.text.split(delim)
-        banners = [BANNER_1, BANNER_2, BANNER_3]
-        if 4 <= len(text):
-            for i in range(3):
-                temp += text[i] + delim + banners[i] + delim
-            temp += delim.join(text[3:])
-        elif 3 <= len(text):
-            for i in range(2):
-                temp += text[i] + delim + banners[i] + delim
-            temp += delim.join(text[2:])
-        elif 2 <= len(text):
-            temp = text[0] + delim + banners[0] + delim + text[1]
-        elif 1 <= len(text):
-            temp = delim.join(text)
-        self.text = temp
 
 
     def _compile(self):
