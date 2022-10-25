@@ -76,6 +76,11 @@ class Article:
              ]
 
     REPLACE = [(" kid ", " rapper "), (" kids ", " rappers "), 
+               (" kid,", " rapper,"), (" kid.", " rapper."),
+               (" kids,", " rappers"), (" kids.", " rappers"),
+               (" teenager ", " rapper "), (" teenagers ", " rappers "),
+               (" teenager,", " rapper,"), (" teenager.", " rapper."),
+               (" teenagers,", " rappers,"), (" teenagers.", " rappers."),
                (" rhythm guitar", " MPC"),
                (" lead guitar", " MPC"), (" bass guitar", " MPC"), 
                (" guitar", " MPC"),
