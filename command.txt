@@ -1,0 +1,1 @@
+python generator.py 1000 "I am a music producer. I make trap beats for rappers. Mixtapes with my trap beats are straight fire."

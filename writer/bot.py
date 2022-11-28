@@ -27,7 +27,7 @@ class Article:
 
     REJECT = ["childhood", "world", "young", "my soul", "education", 
               " wood ", "india", "canada", "france", "ireland" "germany",
-              "a&r"]
+              "a&r", "student"]
 
 
     FLAGS = ["fuck", " ass", "dumbass", "bitch", "damn", "pussy", "cunt", 
@@ -128,14 +128,15 @@ class Article:
 
     def __init__(self):
         self._database = "articles/database.db"
-        self.author    = "EleutherAI/gpt-neo-125M"
+        self.AI        = "EleutherAI/gpt-neo-125M"
+        self.author    = "MΞTALHEΔD MΛKΞS BΞΔTS"
         self.title     = None
         self.desc      = None
         self.text      = None
 
 
     def _set_generator(self):
-        generator = pipeline('text-generation', model = self.author)
+        generator = pipeline('text-generation', model = self.AI)
         self._generator = generator
 
 
@@ -202,6 +203,7 @@ class Article:
     def _reshape(self, text, slug):
         self._super_filter(text)
         text = text[len(slug):].strip()
+        assert text.count("\n\n"), "Text was just 1 paragraph."
         text = ".".join(text.split(".")[:-1]) + "."
         assert len(text.split(" ")) >= MIN, (f"only {len(text.split(' '))} "
                                               "words (stage-1.)")
@@ -441,7 +443,7 @@ class Article:
         self.text = self.text.replace("qqq", "###")
         self.text = self.text.replace("Qqq", "###")
 
-        self.desc  = self.text[:80] + "..."
+        self.desc  = self.text[:140] + "..."
         self.text  = "<p>" + self.text.replace("\n\n", "</p><p>")
         self.text  = self.text.replace("<p></p>", "")
         if not self.text.endswith("."):
