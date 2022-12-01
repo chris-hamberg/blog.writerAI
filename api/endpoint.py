@@ -1,4 +1,5 @@
 import requests
+import time
 import json
 import os
 
@@ -13,15 +14,23 @@ class Endpoint:
 
 
     def post(self, article):
-        url = f"{self.url}/api/article/"
+        url, retries, t = f"{self.url}/api/article/", 10, 1.01
         data = {
             "title"   : article.title,
             "author"  : article.author,
             "desc"    : article.desc,
             "article" : article.text,
             "password": self.password}
-        r = requests.post(url, headers = self.headers, data = json.dumps(data))
-        return r
+        while retries:
+            try:
+                r = requests.post(url, headers = self.headers,
+                        data = json.dumps(data))
+                return r
+            except requests.exceptions.ConnectionError:
+                print(f"ConnectionError: sleeping {t} seconds.")
+                time.sleep(t)
+                t = t**2
+                i -= 1
 
 
     def get(self, id):
