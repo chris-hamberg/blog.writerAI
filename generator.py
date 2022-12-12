@@ -3,6 +3,7 @@ from api.endpoint import Endpoint
 from writer.bot import Article
 import time
 import sys
+import os
 
 
 def main(n, slug, test):
@@ -49,5 +50,9 @@ if __name__ == "__main__":
     except IndexError:
         print("Number of articles to post and slug are required args.")
         sys.exit(0)
-    else:
+    
+    try:
         main(n, slug, test)
+    except KeyboardInterrupt:
+        path = os.path.join("writer", "ACTIVE")
+        if os.path.exists(path): os.remove(path)

@@ -7,6 +7,7 @@ import sqlite3
 import random
 import time
 import sys
+import os
 
 
 data = {"generations": 0, "lifetime iterations": 0, "curgen iterations": 0, 
@@ -136,8 +137,22 @@ class Article:
 
 
     def _set_generator(self):
+        reported = False
+        path = os.sep.join(os.getcwd().split(os.sep)[:-1])
+        path = os.path.join(path, "twitter.bot", "model", "tweet", "ACTIVE")
+        while os.path.exists(path):
+            if not reported:
+                print("\nWaiting for twitter.bot to finish AI generation.\n")
+                reported = True
+            time.sleep(1)
+
+        path = os.path.join("writer", "ACTIVE")
+        with open(path, "w") as fhand: fhand.write("")
+
         generator = pipeline('text-generation', model = self.AI)
         self._generator = generator
+
+        return path
 
 
     def write(self, slug, test = None, max_length = 800, do_sample = True, 
@@ -150,11 +165,12 @@ class Article:
             self.text  = None
             self.title = None
             self.desc  = None
-            self._set_generator()
+            path = self._set_generator()
             result = self._generator(slug, max_length = max_length,
                     do_sample = do_sample, temperature = temperature)
             del self._generator
             text = result[0]["generated_text"]
+            os.remove(path)
             time.sleep(1)
             try:
                 self._reshape(text, slug)
@@ -319,6 +335,8 @@ class Article:
                 elif sentence.lower().count("ixxxm a rapper"):
                     continue
                 elif sentence.lower().count("i`m a rapper"):
+                    continue
+                elif sentence.lower().count("body"):
                     continue
                 elif sentence.lower().count(keyword):
                     results.append(sentence)
