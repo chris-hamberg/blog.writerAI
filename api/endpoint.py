@@ -30,7 +30,7 @@ class Endpoint:
                 print(f"ConnectionError: sleeping {t} seconds.")
                 time.sleep(t)
                 t = t**2
-                i -= 1
+                retries -= 1
 
 
     def get(self, id):
